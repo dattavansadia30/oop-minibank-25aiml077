@@ -1,18 +1,21 @@
-import java.lang.annotation.Inherited;
+import exception.BankException;
+import exception.InsufficientFundsException;
+import exception.InvalidAmountException;
 
 public abstract class Account implements Transactable, InterestBearing {
+
     @Id
     private final String accountNumber;
+
     private final String ownerName;
+
     @Positive
     protected long balance;
+
     private boolean active;
 
     public Account(String ownerName, long balance) {
-        this.accountNumber = "AC0001";
-        this.ownerName = ownerName;
-        this.balance = balance;
-        this.active = true;
+        this("AC0000", ownerName, balance);
     }
 
     public Account(String accountNumber, String ownerName, long balance) {
@@ -39,21 +42,34 @@ public abstract class Account implements Transactable, InterestBearing {
     }
 
     @Override
-    public void deposit(long amount) {
-        if (amount > 0) {
-            balance += amount;
+    public void deposit(long amount) throws InvalidAmountException {
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                    "Deposit amount must be greater than zero.");
         }
+
+        balance += amount;
     }
 
     @Override
-    public boolean withdraw(long amount) {
-        if (amount > 0 && canWithdraw(amount)) {
-            balance -= amount;
-            return true;
-        }
-        return false;
-    }
+    public boolean withdraw(long amount)
+            throws InsufficientFundsException, InvalidAmountException {
 
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                    "Withdrawal amount must be greater than zero.");
+        }
+
+        if (!canWithdraw(amount)) {
+            long shortfall = amount - balance;
+
+            throw new InsufficientFundsException(
+                    "Insufficient funds!", shortfall);
+        }
+
+        balance -= amount;
+        return true;
+    }
 
     public abstract double interestRate();
 
@@ -65,10 +81,12 @@ public abstract class Account implements Transactable, InterestBearing {
 
     @Override
     public String toString() {
-        return "Account Number: " + accountNumber
-                + ", Owner: " + ownerName
-                + ", Balance: " + balance
-                + ", Active: " + active;
+        return "Account{"
+                + "accountNumber='" + accountNumber + '\''
+                + ", ownerName='" + ownerName + '\''
+                + ", balance=" + balance
+                + ", active=" + active
+                + '}';
     }
 
     @Override
@@ -89,4 +107,17 @@ public abstract class Account implements Transactable, InterestBearing {
     public int hashCode() {
         return accountNumber.hashCode();
     }
+
+public void transfer(Account to, long amount) throws BankException {
+    try {
+        this.withdraw(amount);
+        to.deposit(amount);
+        System.out.println("Transfer successful!");
+    } catch (BankException e) {
+        throw e;
+    } finally {
+        System.out.println("Transfer attempt completed.");
+    }
+}
+
 }
