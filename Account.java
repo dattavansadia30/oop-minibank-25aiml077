@@ -1,8 +1,10 @@
+import java.lang.annotation.Inherited;
 
-public abstract class Account {
-
+public abstract class Account implements Transactable, InterestBearing {
+    @Id
     private final String accountNumber;
     private final String ownerName;
+    @Positive
     protected long balance;
     private boolean active;
 
@@ -35,6 +37,23 @@ public abstract class Account {
     public boolean isActive() {
         return active;
     }
+
+    @Override
+    public void deposit(long amount) {
+        if (amount > 0) {
+            balance += amount;
+        }
+    }
+
+    @Override
+    public boolean withdraw(long amount) {
+        if (amount > 0 && canWithdraw(amount)) {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+
 
     public abstract double interestRate();
 
