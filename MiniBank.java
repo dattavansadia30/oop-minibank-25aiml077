@@ -1,30 +1,24 @@
 
-import exception.InsufficientFundsException;
-import exception.InvalidAmountException;
-
 public class MiniBank {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         Account account = new SavingsAccount(
-                "AC0001", "Riya", 1000, 0);
+                "AC0001", "Riya", 0, 0);
 
-        try {
-            account.withdraw(5000);
-        } catch (InsufficientFundsException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Shortfall: " + e.getShortfall());
-        } catch (InvalidAmountException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            System.out.println("Transaction completed.");
+        Thread[] threads = new Thread[10];
+
+        for (int i = 0; i < 10; i++) {
+            AccountWorker worker = new AccountWorker(account, 1000, 1);
+
+            threads[i] = new Thread(worker, "Thread-" + (i + 1));
+            threads[i].start();
         }
 
-try (BankResource resource = new BankResource()) {
-    resource.use();
-} catch (Exception e) {
-    System.out.println("Error: " + e.getMessage());
-}
+        for (Thread thread : threads) {
+            thread.join();
+        }
 
+        System.out.println("Final Balance: " + account.getBalance());
     }
 }
