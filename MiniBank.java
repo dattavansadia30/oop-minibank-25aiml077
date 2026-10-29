@@ -3,38 +3,31 @@ public class MiniBank {
 
     public static void main(String[] args) {
 
-        Account a1 = new Account("AC0001", "Riya", 4000);
-        Account a2 = new Account("AC0001", "Riya", 4000);
-        Account a3 = new Account("Aarav", 3000);
+        System.out.println("=== Mobile Validation ===");
+        System.out.println(Validator.isValidMobile("9876543210"));
+        System.out.println(Validator.isValidMobile("12345"));
 
-        System.out.println("MiniBank - Practical 3");
-        System.out.println("----------------------");
+        System.out.println("\n=== Email Validation ===");
+        System.out.println(Validator.isValidEmail("abc@xyz.com"));
+        System.out.println(Validator.isValidEmail("abcxyz.com"));
 
-        System.out.println("Account 1: " + a1);
-        System.out.println("Account 2: " + a2);
-        System.out.println("Account 3: " + a3);
+        System.out.println("\n=== PAN Validation ===");
+        System.out.println(Validator.isValidPan("ABCDE1234F"));
+        System.out.println(Validator.isValidPan("12345"));
 
-        System.out.println("\nAre a1 and a2 equal? " + a1.equals(a2));
+        System.out.println("\n=== IFSC Validation ===");
+        System.out.println(Validator.isValidIfsc("SBIN0001234"));
+        System.out.println(Validator.isValidIfsc("12345"));
 
-        Object obj = a1;
-        System.out.println("Is obj an Account? " + (obj instanceof Account));
+        System.out.println("\n=== Command Parsing ===");
+        Command command = CommandParser.parse("DEPOSIT AC0001 500");
 
-        Customer c1 = new Customer(
-            "Riya", "riya@gmail.com", "9876543210"
-        );
+        System.out.println("Type: " + command.type());
+        System.out.println("Account Number: " + command.accountNumber());
+        System.out.println("Amount: " + command.amount());
 
-        Customer.Address address = new Customer.Address(
-            "Main Road", "Vadodara", "391101"
-        );
-
-        c1.setAddress(address);
-
-        System.out.println("\nCustomer: " + c1.getName());
-        System.out.println("Customer ID: " + c1.getCustomerId());
-        System.out.println("City: " + c1.getAddress().getCity());
-
-        Customer c2 = c1.clone();
-        System.out.println("Cloned customer: " + c2.getName());
-        System.out.println("Clone created: " + (c1 != c2));
+        System.out.println("\n=== Account Statement ===");
+        Account account = new Account("Riya", 4000);
+        System.out.println(StatementFormatter.buildStatement(account));
     }
 }
