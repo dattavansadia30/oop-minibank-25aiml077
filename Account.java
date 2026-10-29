@@ -1,52 +1,23 @@
 
-import java.util.Objects;
+public abstract class Account {
 
-public class Account {
     private final String accountNumber;
-    private String ownerName;
-    private long balance;
+    private final String ownerName;
+    protected long balance;
     private boolean active;
 
-    private static int accountCounter = 0;
-
-    private static String generateAccountNumber() {
-        accountCounter++;
-        return String.format("AC%04d", accountCounter);
-    }
-
-    public Account(String ownerName, long openingBalance) {
-        this.accountNumber = generateAccountNumber();
-        this.ownerName = ownerName;
-        this.balance = Math.max(0, openingBalance);
-        this.active = true;
-    }
-
-    public Account(String ownerName) {
-        this(ownerName, 0);
-    }
-
-    // Constructor to test accounts with the same account number
-    public Account(String accountNumber, String ownerName, long balance) {
-        this.accountNumber = accountNumber;
+    public Account(String ownerName, long balance) {
+        this.accountNumber = "AC0001";
         this.ownerName = ownerName;
         this.balance = balance;
         this.active = true;
     }
 
-    public void deposit(long amount) {
-        if (amount <= 0) {
-            System.out.println("Invalid deposit amount.");
-            return;
-        }
-        balance += amount;
-    }
-
-    public boolean withdraw(long amount) {
-        if (amount <= 0 || amount > balance) {
-            return false;
-        }
-        balance -= amount;
-        return true;
+    public Account(String accountNumber, String ownerName, long balance) {
+        this.accountNumber = accountNumber;
+        this.ownerName = ownerName;
+        this.balance = balance;
+        this.active = true;
     }
 
     public String getAccountNumber() {
@@ -65,28 +36,38 @@ public class Account {
         return active;
     }
 
-    @Override
-    public String toString() {
-        return accountNumber + " | " + ownerName + " | "
-                + balance + " | Active: " + active;
+    public abstract double interestRate();
+
+    public abstract boolean canWithdraw(long amount);
+
+    public double monthlyInterest() {
+        return balance * interestRate() / 100 / 12;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public String toString() {
+        return "Account Number: " + accountNumber
+                + ", Owner: " + ownerName
+                + ", Balance: " + balance
+                + ", Active: " + active;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (!(o instanceof Account)) {
+        if (!(obj instanceof Account)) {
             return false;
         }
 
-        Account other = (Account) o;
+        Account other = (Account) obj;
         return accountNumber.equals(other.accountNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountNumber);
+        return accountNumber.hashCode();
     }
 }
