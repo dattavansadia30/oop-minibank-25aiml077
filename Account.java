@@ -1,6 +1,7 @@
 
-public class Account {
+import java.util.Objects;
 
+public class Account {
     private final String accountNumber;
     private String ownerName;
     private long balance;
@@ -24,12 +25,19 @@ public class Account {
         this(ownerName, 0);
     }
 
+    // Constructor to test accounts with the same account number
+    public Account(String accountNumber, String ownerName, long balance) {
+        this.accountNumber = accountNumber;
+        this.ownerName = ownerName;
+        this.balance = balance;
+        this.active = true;
+    }
+
     public void deposit(long amount) {
         if (amount <= 0) {
             System.out.println("Invalid deposit amount.");
             return;
         }
-
         balance += amount;
     }
 
@@ -37,7 +45,6 @@ public class Account {
         if (amount <= 0 || amount > balance) {
             return false;
         }
-
         balance -= amount;
         return true;
     }
@@ -56,5 +63,30 @@ public class Account {
 
     public boolean isActive() {
         return active;
+    }
+
+    @Override
+    public String toString() {
+        return accountNumber + " | " + ownerName + " | "
+                + balance + " | Active: " + active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Account)) {
+            return false;
+        }
+
+        Account other = (Account) o;
+        return accountNumber.equals(other.accountNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountNumber);
     }
 }
