@@ -3,25 +3,15 @@ public class MiniBank {
 
     public static void main(String[] args) {
 
-        Account[] accounts = {
-            new SavingsAccount("AC0001", "Riya", 10000, 2000),
-            new CurrentAccount("AC0002", "Rahul", 5000, 3000),
-            new FixedDepositAccount("AC0003", "Priya", 20000)
-        };
+        Account account = new SavingsAccount(
+                "AC0001", "Riya", 1000, 0);
 
-        for (Account account : accounts) {
-            System.out.println("Account: " + account.getAccountNumber());
-            System.out.println("Owner: " + account.getOwnerName());
-            System.out.println("Interest Rate: " + account.interestRate());
-            System.out.println("Monthly Interest: " + account.monthlyInterest());
+        String[] errors = AnnotationValidator.validate(account);
 
-            if (account instanceof SavingsAccount savings) {
-                System.out.println("Savings Account detected.");
-                System.out.println("Can withdraw 1000: "
-                        + savings.canWithdraw(1000));
-            }
+        System.out.println("Validation Errors:");
 
-            System.out.println("-------------------------");
+        for (String error : errors) {
+            System.out.println(error);
         }
     }
 }
