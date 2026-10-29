@@ -1,50 +1,48 @@
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class MiniBank {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
-        try {
-            Path dataFolder = Path.of("data");
-            Path logsFolder = dataFolder.resolve("logs");
+        AccountStore store = new AccountStore();
 
-            Files.createDirectories(logsFolder);
+        Account a1 = new SavingsAccount("AC0001", "Riya", 5000, 0);
+        Account a2 = new SavingsAccount("AC0002", "Aarav", 2000, 0);
+        Account a3 = new SavingsAccount("AC0003", "Diya", 9000, 0);
 
-            Account[] accounts = {
-                new SavingsAccount("AC0001", "Riya", 1000, 0)
-            };
+        // Add accounts to the store
+        store.add(a1);
+        store.add(a2);
+        store.add(a3);
 
-            // Save accounts
-            Path accountFile = dataFolder.resolve("accounts.dat");
-            StatePersister.save(accounts, accountFile);
-            System.out.println("Accounts saved.");
+        // Search by account number
+        System.out.println("Account Found:");
+        System.out.println(store.get("AC0002"));
 
-            // Load accounts
-            Account[] loadedAccounts = StatePersister.load(accountFile);
+        // Add transaction history
+        store.addTransaction("DEPOSIT AC0001 500");
+        store.addTransaction("WITHDRAW AC0002 200");
 
-            System.out.println("\nLoaded Accounts:");
-            for (Account account : loadedAccounts) {
-                System.out.println(account);
-            }
-
-            // Add transaction logs
-            Path logFile = logsFolder.resolve("transactions.log");
-
-            TransactionLog.append(logFile, "DEPOSIT AC0001 500");
-            TransactionLog.append(logFile, "WITHDRAW AC0001 200");
-
-            // Generate report
-            Path reportFile = dataFolder.resolve("report.txt");
-
-            ReportGenerator.generate(logsFolder, reportFile);
-
-            System.out.println("Report saved successfully.");
-
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error: " + e.getMessage());
+        System.out.println("\nTransaction History:");
+        for (String transaction : store.getTransactionHistory()) {
+            System.out.println(transaction);
         }
+
+        // Sort accounts by balance
+        System.out.println("\nAccounts Sorted by Balance:");
+        for (Account account : store.sortedByBalance()) {
+            System.out.println(account);
+        }
+
+        // Use thread-safe account storage
+        TransactionProcessor processor = new TransactionProcessor();
+
+        processor.addAccount(a1);
+        processor.addAccount(a2);
+        processor.addAccount(a3);
+
+        System.out.println("\nThread-safe Account Lookup:");
+        System.out.println(processor.getAccount("AC0002"));
+
+        processor.stop();
     }
 }

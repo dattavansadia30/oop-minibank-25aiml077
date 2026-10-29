@@ -3,7 +3,8 @@ import exception.BankException;
 import exception.InsufficientFundsException;
 import exception.InvalidAmountException;
 
-public abstract class Account implements Transactable, InterestBearing, Serializable {
+public abstract class Account implements Transactable, InterestBearing, Serializable, Comparable<Account> {
+
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -120,6 +121,10 @@ public void transfer(Account to, long amount) throws BankException {
     } finally {
         System.out.println("Transfer attempt completed.");
     }
+}
+@Override
+public int compareTo(Account other) {
+    return this.accountNumber.compareTo(other.accountNumber);
 }
 
 }
