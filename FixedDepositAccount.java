@@ -1,5 +1,6 @@
-
+import java.io.Serializable;
 public class FixedDepositAccount extends Account {
+    private static final long serialVersionUID = 1L;
 
     public FixedDepositAccount(String accountNumber, String ownerName,
                                long balance) {

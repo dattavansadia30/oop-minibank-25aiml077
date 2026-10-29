@@ -1,36 +1,50 @@
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class MiniBank {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
-        TransactionBuffer buffer = new TransactionBuffer();
+        try {
+            Path dataFolder = Path.of("data");
+            Path logsFolder = dataFolder.resolve("logs");
 
-        Thread producer = new Thread(() -> {
-            try {
-                buffer.addTransaction(100);
-                buffer.addTransaction(200);
-                buffer.addTransaction(300);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            Files.createDirectories(logsFolder);
+
+            Account[] accounts = {
+                new SavingsAccount("AC0001", "Riya", 1000, 0)
+            };
+
+            // Save accounts
+            Path accountFile = dataFolder.resolve("accounts.dat");
+            StatePersister.save(accounts, accountFile);
+            System.out.println("Accounts saved.");
+
+            // Load accounts
+            Account[] loadedAccounts = StatePersister.load(accountFile);
+
+            System.out.println("\nLoaded Accounts:");
+            for (Account account : loadedAccounts) {
+                System.out.println(account);
             }
-        }, "Producer");
 
-        Thread consumer = new Thread(() -> {
-            try {
-                for (int i = 0; i < 3; i++) {
-                    buffer.getTransaction();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }, "Consumer");
+            // Add transaction logs
+            Path logFile = logsFolder.resolve("transactions.log");
 
-        consumer.start();
-        producer.start();
+            TransactionLog.append(logFile, "DEPOSIT AC0001 500");
+            TransactionLog.append(logFile, "WITHDRAW AC0001 200");
 
-        producer.join();
-        consumer.join();
+            // Generate report
+            Path reportFile = dataFolder.resolve("report.txt");
 
-        System.out.println("All transactions processed.");
+            ReportGenerator.generate(logsFolder, reportFile);
+
+            System.out.println("Report saved successfully.");
+
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }
