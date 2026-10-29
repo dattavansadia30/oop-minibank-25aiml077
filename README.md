@@ -32,3 +32,11 @@ Run the program:
 
 ## Future Development
 More banking features will be added in upcoming practicals.
+
+### Practical 2: Customer and Account Classes
+
+- Created a `Customer` class with private fields and unique customer IDs.
+- Created an `Account` class with unique account numbers.
+- Added constructors, getters, deposit, and withdrawal methods.
+- Tested deposits and withdrawals, including insufficient balance.
+- Used an array to store multiple bank accounts.
